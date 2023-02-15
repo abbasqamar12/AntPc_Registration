@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="25dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginEnd="25dp"
+    android:layout_marginBottom="5dp"
+    android:background="@drawable/quiz_bg"
+    android:elevation="5dp"
+    android:paddingStart="10dp"
+    android:paddingTop="15dp"
+    android:paddingEnd="10dp"
+    android:paddingBottom="10dp">
+
+    <TextView
+        android:id="@+id/txtQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="Which of the following service allows a user to log in to another computer somewhere on the Internet?"
+        android:textColor="@color/purple_700"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <!-- <RadioGroup
+         android:id="@+id/radioGroupQuiz"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="5dp"
+         android:layout_below="@id/txtQuestion">-->
+
+    <!--adding a radio button -->
+    <RadioButton
+        android:id="@+id/radioOption1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtQuestion"
+        android:layout_marginTop="5dp"
+        android:checked="false"
+        android:padding="4dp"
+        android:text="e-mail" />
+
+    <!--adding a radio button -->
+    <RadioButton
+        android:id="@+id/radioOption2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:layout_below="@id/radioOption1"
+        android:padding="4dp"
+        android:text="UseNet" />
+
+    <!--adding a radio button -->
+    <RadioButton
+        android:id="@+id/radioOption3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/radioOption2"
+        android:checked="false"
+        android:padding="4dp"
+        android:text="Telnet" />
+
+    <!--adding a radio button -->
+    <RadioButton
+        android:id="@+id/radioOption4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/radioOption3"
+        android:checked="false"
+        android:padding="4dp"
+        android:text="FTP" />
+    <!-- </RadioGroup>-->
+
+</RelativeLayout>
