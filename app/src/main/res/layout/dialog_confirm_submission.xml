@@ -31,7 +31,7 @@
             android:layout_below="@id/txtQuizHeading"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="20dp"
-            android:text="Do you wantr to submit the quiz?"
+            android:text="Do you want to submit the quiz?"
             android:textColor="@color/black"
             android:textSize="16sp" />
 

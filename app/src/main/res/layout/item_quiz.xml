@@ -24,19 +24,18 @@
         android:textSize="15sp"
         android:textStyle="bold" />
 
-    <!-- <RadioGroup
+     <RadioGroup
          android:id="@+id/radioGroupQuiz"
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
          android:layout_marginTop="5dp"
-         android:layout_below="@id/txtQuestion">-->
+         android:layout_below="@id/txtQuestion">
 
     <!--adding a radio button -->
     <RadioButton
         android:id="@+id/radioOption1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/txtQuestion"
         android:layout_marginTop="5dp"
         android:checked="false"
         android:padding="4dp"
@@ -48,7 +47,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:checked="false"
-        android:layout_below="@id/radioOption1"
         android:padding="4dp"
         android:text="UseNet" />
 
@@ -57,7 +55,6 @@
         android:id="@+id/radioOption3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/radioOption2"
         android:checked="false"
         android:padding="4dp"
         android:text="Telnet" />
@@ -67,10 +64,9 @@
         android:id="@+id/radioOption4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/radioOption3"
         android:checked="false"
         android:padding="4dp"
         android:text="FTP" />
-    <!-- </RadioGroup>-->
+     </RadioGroup>
 
 </RelativeLayout>

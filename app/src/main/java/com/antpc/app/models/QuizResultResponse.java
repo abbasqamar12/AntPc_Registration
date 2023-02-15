@@ -3,13 +3,12 @@ package com.antpc.app.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class SignUpResponseAntplay {
+import java.util.List;
+
+public class QuizResultResponse {
     @SerializedName("message")
     @Expose
     private String message;
-    @SerializedName("id")
-    @Expose
-    private int id;
     @SerializedName("status")
     @Expose
     private boolean status;
@@ -19,12 +18,4 @@ public class SignUpResponseAntplay {
 
     public boolean getStatus() { return status; }
     public void setStatus(boolean value) { this.status = value; }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 }

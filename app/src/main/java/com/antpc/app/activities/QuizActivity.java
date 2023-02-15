@@ -1,7 +1,12 @@
 package com.antpc.app.activities;
 
+import static android.content.ContentValues.TAG;
+
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,12 +18,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.antpc.app.R;
 import com.antpc.app.adapters.QuizAdapter;
+import com.antpc.app.api.APIClient;
+import com.antpc.app.api.RetrofitAPI;
 import com.antpc.app.dialog.ConfirmSubmissionDialog;
 import com.antpc.app.listeners.QuizAnswerListener;
 import com.antpc.app.models.QuizModel;
+import com.antpc.app.models.QuizResultRequest;
+import com.antpc.app.models.QuizResultResponse;
+
+import com.antpc.app.utils.Const;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class QuizActivity extends AppCompatActivity implements QuizAnswerListener {
     List<QuizModel> quizList = new ArrayList<>();
@@ -26,6 +41,8 @@ public class QuizActivity extends AppCompatActivity implements QuizAnswerListene
     RecyclerView recyclerView;
     TextView txtSubmit;
     ConfirmSubmissionDialog confirmSubmissionDialog;
+    int userId;
+    private ProgressBar loadingPB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +50,11 @@ public class QuizActivity extends AppCompatActivity implements QuizAnswerListene
         setContentView(R.layout.activity_quiz);
         recyclerView = findViewById(R.id.rvQuiz);
         txtSubmit = findViewById(R.id.txtSubmit);
+        loadingPB = (ProgressBar) findViewById(R.id.progressBar);
+
+        if (getIntent().hasExtra("USER_ID")) {
+            userId = getIntent().getIntExtra("USER_ID", 0);
+        }
         txtSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,7 +133,8 @@ public class QuizActivity extends AppCompatActivity implements QuizAnswerListene
     public void submitAnswer(boolean isReady) {
         if (isReady) {
             confirmSubmissionDialog.dismiss();
-            Toast.makeText(QuizActivity.this, "Your Score is " + collectQuizData(), Toast.LENGTH_LONG).show();
+            callUpdateQuizAPI();
+            //Toast.makeText(QuizActivity.this, "Your Score is " + collectQuizData(), Toast.LENGTH_LONG).show();
         } else {
             confirmSubmissionDialog.dismiss();
         }
@@ -126,4 +149,48 @@ public class QuizActivity extends AppCompatActivity implements QuizAnswerListene
         }
         return score;
     }
+
+    private void callUpdateQuizAPI() {
+        loadingPB.setVisibility(View.VISIBLE);
+        RetrofitAPI retrofitAPI = APIClient.getRetrofitInstance(Const.DEV_URL_ANT).create(RetrofitAPI.class);
+        //SignupRequest signUpRequestModel = new SignupRequest(Const.API_KEY, firstName, lastName, userEmail, userMobile, userAge, state, referenceText, demoRequired, ratingCount, usersSuggestion);
+        QuizResultRequest quizResultRequest = new QuizResultRequest(String.valueOf(userId), String.valueOf(collectQuizData()));
+        Call<QuizResultResponse> call = retrofitAPI.quizAPIRequest(quizResultRequest);
+        call.enqueue(new Callback<QuizResultResponse>() {
+            @Override
+            public void onResponse(Call<QuizResultResponse> call, Response<QuizResultResponse> response) {
+                assert response.body() != null;
+                if (response.body().getStatus()) {
+                    loadingPB.setVisibility(View.GONE);
+                    Log.d(TAG, "" + response.body().getMessage());
+                    // Toast.makeText(MainActivity.this, "Congratulations! you are successfully registered with Bingo", Toast.LENGTH_LONG).show();
+                    //SharedPreferenceUtils.saveString(LoginActivity.this, Const.ACCESS_TOKEN, response.body().getToken());
+
+                    Intent i = new Intent(QuizActivity.this, ThanksActivity.class);
+                    startActivity(i);
+                    finish();
+
+
+                } else if (response.code() == 200) {
+                    loadingPB.setVisibility(View.GONE);
+                    Log.e(TAG, "Else condition");
+                    Toast.makeText(QuizActivity.this, response.body().getMessage(), Toast.LENGTH_LONG).show();
+
+                } else {
+                    loadingPB.setVisibility(View.GONE);
+                    // AppUtils.showToast(Const.no_records, LoginActivity.this);
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<QuizResultResponse> call, Throwable t) {
+                Log.e(TAG, "" + t);
+                loadingPB.setVisibility(View.GONE);
+                //AppUtils.showToast(Const.something_went_wrong, LoginActivity.this);
+            }
+        });
+
+    }
+
 }

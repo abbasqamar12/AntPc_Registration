@@ -135,11 +135,10 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder
         holder.radioOption4.setSelected(optionD);
     }
 
-  /*  @Override
+    @Override
     public int getItemViewType(int position) {
         return position;
     }
-*/
     @Override
     public int getItemCount() {
         return quizQueList.size();
@@ -154,7 +153,7 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.QuizViewHolder
         public QuizViewHolder(@NonNull View itemView) {
             super(itemView);
             txtQuestion = itemView.findViewById(R.id.txtQuestion);
-          //  radioGroup = itemView.findViewById(R.id.radioGroupQuiz);
+            radioGroup = itemView.findViewById(R.id.radioGroupQuiz);
             radioOption1 = itemView.findViewById(R.id.radioOption1);
             radioOption2 = itemView.findViewById(R.id.radioOption2);
             radioOption3 = itemView.findViewById(R.id.radioOption3);

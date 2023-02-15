@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtSubmit = findViewById(R.id.txtSubmit);
 
         loadingPB = (ProgressBar) findViewById(R.id.progressBar);
+
         referenceSpinner.setOnItemSelectedListener(MainActivity.this);
         setSpinnerAdapter();
         setOnClickListener();
@@ -206,7 +207,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // Toast.makeText(MainActivity.this, "Congratulations! you are successfully registered with Bingo", Toast.LENGTH_LONG).show();
                     //SharedPreferenceUtils.saveString(LoginActivity.this, Const.ACCESS_TOKEN, response.body().getToken());
                     if (checkBoxQuiz.isChecked()) {
-                        Intent i = new Intent(MainActivity.this, ThanksActivity.class);
+                        Intent i = new Intent(MainActivity.this, QuizActivity.class);
+                        i.putExtra("USER_ID",response.body().getId());
                         startActivity(i);
                         finish();
                     } else {
