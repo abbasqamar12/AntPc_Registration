@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         loadingPB.setVisibility(View.VISIBLE);
         RetrofitAPI retrofitAPI = APIClient.getRetrofitInstance(Const.DEV_URL_ANT).create(RetrofitAPI.class);
         //SignupRequest signUpRequestModel = new SignupRequest(Const.API_KEY, firstName, lastName, userEmail, userMobile, userAge, state, referenceText, demoRequired, ratingCount, usersSuggestion);
-        SignupRequest signUpRequestModel = new SignupRequest(firstName, lastName, userEmail, userMobile, userAge, state, "antpc",referenceText, demoRequired, ratingCount, usersSuggestion);
+        SignupRequest signUpRequestModel = new SignupRequest(firstName, lastName, userEmail, userMobile, userAge, state, referenceText, demoRequired, ratingCount, usersSuggestion,"antpc");
         Call<SignUpResponseAntplay> call = retrofitAPI.signupAPIRequest(signUpRequestModel);
         call.enqueue(new Callback<SignUpResponseAntplay>() {
             @Override
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // AppUtils.showToast(Const.password_error, LoginActivity.this);
                 } else {
                     loadingPB.setVisibility(View.GONE);
-                    // AppUtils.showToast(Const.no_records, LoginActivity.this);
+                    Toast.makeText(MainActivity.this,"User already exists, Please try with different entries",Toast.LENGTH_LONG).show();
 
                 }
             }
@@ -238,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onFailure(Call<SignUpResponseAntplay> call, Throwable t) {
                 Log.e(TAG, "" + t);
                 loadingPB.setVisibility(View.GONE);
+                Toast.makeText(MainActivity.this,"Failure",Toast.LENGTH_LONG).show();
                 //AppUtils.showToast(Const.something_went_wrong, LoginActivity.this);
             }
         });
@@ -247,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void callBulkSignUpAPI(List<SignupRequest> localUsersList) {
         loadingPB.setVisibility(View.VISIBLE);
-        RetrofitAPI retrofitAPI = APIClient.getRetrofitInstance(Const.DEV_URL).create(RetrofitAPI.class);
+        RetrofitAPI retrofitAPI = APIClient.getRetrofitInstance(Const.DEV_URL_ANT).create(RetrofitAPI.class);
         BulkDataRequest bulkDataRequestModel = new BulkDataRequest(localUsersList);
         Call<SignUpResponse> call = retrofitAPI.bulkSignupAPIRequest(bulkDataRequestModel);
         call.enqueue(new Callback<SignUpResponse>() {
@@ -256,12 +257,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 assert response.body() != null;
                 if (response.body().getStatus()) {
                     loadingPB.setVisibility(View.GONE);
+                    isDataListUpdatedOnServer = true;
                     Log.d(TAG, "" + response.body().getMessage());
-                    // Toast.makeText(MainActivity.this, "Congratulations! you are successfully registered with Bingo", Toast.LENGTH_LONG).show();
+                    new DeleteUserAsyncTask(comiconUserDao);
+                    // Toast.makeText(MainActivity.this, "Congratulations! you are successfully registered with AntPc", Toast.LENGTH_LONG).show();
 
 
                 } else if (response.code() == 200) {
                     loadingPB.setVisibility(View.GONE);
+                    isDataListUpdatedOnServer = false;
                     Log.e(TAG, "Else condition");
                     // Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_LONG).show();
 
@@ -412,8 +416,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SnackBarUtils.customSnackBar(MainActivity.this, isAvailable);
         if (isAvailable) {
             if (!isDataListUpdatedOnServer) {
-                getUserListFromLocalDB();
-                Log.d("USER_DB", "User updated on Server");
+                //getUserListFromLocalDB();
+                new GetUsersAsyncTask(comiconUserDao, this).execute();
+               // Log.d("USER_DB", "Preparing to upload on Server");
             }
         }
     }
@@ -504,6 +509,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         protected List<ComiconUser> doInBackground(Void... voids) {
+            Log.d("USER_DB", "Preparing to upload on Server");
             List<ComiconUser> userList = userDao.getAll();
             //userDao.deleteAll();
 
@@ -518,15 +524,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /*****
+     * Database Operations
+     * Get Data from Database
+     *****/
+    public static class DeleteUserAsyncTask extends AsyncTask<Void,Void,Void>{
+        private ComiconUserDao userDao;
+
+        public DeleteUserAsyncTask(ComiconUserDao dao) {
+            userDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            userDao.deleteAll();
+            Log.d("USER_DB","All Data Deleted");
+            return null;
+        }
+    }
+
     @Override
     public void userListUpdated(List<ComiconUser> users) {
         Log.d("USER_DB", "User Count : " + users.size());
         if (isNetworkAvailable) {
             if (users.size() > 0) {
                 // call API for bulk upload here
-                isDataListUpdatedOnServer = true;
-                // populateUserListForServer(users);
-                // callBulkSignUpAPI(populateUserListForServer(users));
+
+                 //populateUserListForServer(users);
+                 callBulkSignUpAPI(populateUserListForServer(users));
                 for (ComiconUser user : users) {
                     Log.d("USER_DB", user.getUid() + " " + user.getFirstName() + " " + user.getPhoneNumber() + " " + user.getEmail() + " " + user.getAge());
                 }
@@ -542,7 +567,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<SignupRequest> populateUserListForServer(List<ComiconUser> users) {
         List<SignupRequest> localUsers = new ArrayList<>();
         for (ComiconUser userItem : users) {
-            // localUsers.add(new SignupRequest(userItem.getName(), userItem.getMobile(), userItem.getEmail(), userItem.getFlavour()));
+             localUsers.add(new SignupRequest(userItem.getFirstName(), userItem.getLastName(), userItem.getEmail(), userItem.getPhoneNumber(),userItem.getAge(),userItem.getState(),"","No","","No Suggestion","antpc"));
         }
         return localUsers;
     }
