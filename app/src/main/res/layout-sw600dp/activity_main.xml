@@ -310,6 +310,7 @@
                 android:layout_below="@id/llState"
                 android:layout_marginTop="20dp"
                 android:paddingStart="30dp"
+                android:visibility="gone"
                 android:paddingEnd="30dp">
 
                 <CheckBox
